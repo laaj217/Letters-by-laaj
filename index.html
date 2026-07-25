@@ -57,6 +57,7 @@
       color: #765b64;
       box-shadow: 0 5px 20px rgba(100, 70, 80, 0.04);
       transition: transform 0.2s ease, background 0.2s ease;
+      padding: 24px;
     }
 
     .letter.unlocked {
@@ -71,6 +72,28 @@
 
     .lock {
       margin-right: 8px;
+    }
+
+    .letter.open {
+      display: block;
+      text-align: left;
+      cursor: default;
+    }
+
+    .letter.open:hover {
+      transform: none;
+    }
+
+    .letter-text {
+      font-size: 18px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      margin-bottom: 25px;
+    }
+
+    audio {
+      width: 100%;
+      display: block;
     }
 
     @media (max-width: 750px) {
@@ -103,44 +126,88 @@
       Day 1 unlocks:
       26 July 2026 at 12:00 AM Pakistan Standard Time (UTC+5)
 
-      This is 25 July 2026 at 7:00 PM UTC.
+      This equals 25 July 2026 at 7:00 PM UTC.
     */
 
     const firstUnlock = Date.UTC(2026, 6, 25, 19, 0, 0);
+    const oneDay = 24 * 60 * 60 * 1000;
 
     const lettersContainer = document.getElementById("letters");
 
+    const letterData = {
+      1: {
+        text: `Happy birthday baby, i know you said i cant spend money on gifts so obviously i had to come up with other ways to show how much this day, and you, mean to me, so in this portal im gonna write 21 letters to you, 1 for every year since you were born cause i need to make up for all the birthday i have missed. And with every letter I'm gonna put a song that reminds me of us. And because today is your birthday I want to make sure everything feels special cause it really is that important huh. I know I'm not perfect but I genuinely wanna be when it comes to you cause you’re perfect to me and even if you think you’re not, I don't care because you're my home. I promise I'll always stay by your side and be right here whenever you need me. I’ll always put you before everyone else and do anything just to put a smile on your face cause that’s my favourite thing in the whole world. This last year we have gotten even closer in so many ways and it was the best year ever and I know inshallah the coming year is also gonna bring so many great things into your life, and I definitely need to find more ways to annoy you😋and more things to put on our bucket list.`,
+        song: "har-baar.mp3"
+      }
+    };
+
+    function getUnlockedDayCount() {
+      const now = Date.now();
+
+      if (now < firstUnlock) {
+        return 0;
+      }
+
+      return Math.min(
+        21,
+        Math.floor((now - firstUnlock) / oneDay) + 1
+      );
+    }
+
     function createLetters() {
       const now = Date.now();
-      const oneDay = 24 * 60 * 60 * 1000;
+
+      lettersContainer.innerHTML = "";
 
       for (let day = 1; day <= 21; day++) {
         const unlockTime = firstUnlock + ((day - 1) * oneDay);
         const unlocked = now >= unlockTime;
+        const data = letterData[day];
 
         const card = document.createElement("div");
         card.className = unlocked ? "letter unlocked" : "letter";
 
-        if (unlocked) {
-          card.innerHTML = `💌 Day ${day}`;
-        } else {
+        if (!unlocked) {
           card.innerHTML = `<span class="lock">🔒</span> Day ${day}`;
+        } else if (data) {
+          card.innerHTML = `💌 Day ${day}`;
+
+          card.addEventListener("click", () => {
+            card.classList.add("open");
+
+            card.innerHTML = `
+              <div class="letter-text">${data.text}</div>
+              <audio controls preload="metadata">
+                <source src="${data.song}" type="audio/mpeg">
+                Your browser does not support the audio player.
+              </audio>
+            `;
+          }, { once: true });
+        } else {
+          card.innerHTML = `💌 Day ${day}`;
         }
 
         lettersContainer.appendChild(card);
       }
     }
 
+    let unlockedDayCount = getUnlockedDayCount();
+
     createLetters();
 
     /*
-      Refresh automatically when a locked day reaches
-      its unlock time, so the user doesn't need to reload.
+      Check periodically for a newly unlocked day.
+      The page only refreshes the cards when the unlock
+      status changes, so an open letter will not suddenly close.
     */
 
     setInterval(() => {
-      lettersContainer.innerHTML = "";
-      createLetters();
+      const newUnlockedDayCount = getUnlockedDayCount();
+
+      if (newUnlockedDayCount !== unlockedDayCount) {
+        unlockedDayCount = newUnlockedDayCount;
+        createLetters();
+      }
     }, 30000);
   </script>
 
