@@ -132,25 +132,7 @@
 
   <script>
 
-    /*
-      DAY 1:
-      26 July 2026
-      12:00 AM Pakistan Standard Time (UTC+5)
-
-      This equals:
-      25 July 2026
-      7:00 PM UTC
-    */
-
-    const firstUnlock = Date.UTC(2026, 6, 25, 19, 0, 0);
-
-    const lettersContainer =
-      document.getElementById("letters");
-
-
-    /*
-      LETTERS + SONGS
-    */
+    const lettersContainer = document.getElementById("letters");
 
     const letterData = {
 
@@ -167,89 +149,50 @@
 
     function createLetters() {
 
-      const now = Date.now();
-
-      const oneDay =
-        24 * 60 * 60 * 1000;
-
-
       for (let day = 1; day <= 21; day++) {
 
-        const unlockTime =
-          firstUnlock + ((day - 1) * oneDay);
-
-        const unlocked =
-          now >= unlockTime;
-
-        const card =
-          document.createElement("div");
-
+        const card = document.createElement("div");
 
         /*
-          LOCKED DAY
+          TEST MODE:
+          Day 1 is unlocked immediately.
+          Days 2-21 remain locked.
         */
+
+        const unlocked = day === 1;
 
         if (!unlocked) {
 
           card.className = "letter";
+          card.innerHTML = `🔒 Day ${day}`;
 
-          card.innerHTML =
-            `🔒 Day ${day}`;
+        } else {
 
-        }
+          card.className = "letter unlocked";
+          card.innerHTML = `💌 Day ${day}`;
 
-
-        /*
-          UNLOCKED DAY
-        */
-
-        else {
-
-          card.className =
-            "letter unlocked";
-
-          card.innerHTML =
-            `💌 Day ${day}`;
-
-          const data =
-            letterData[day];
-
-
-          /*
-            Only make the card open
-            if a letter has been added
-            for that day.
-          */
+          const data = letterData[day];
 
           if (data) {
 
-            card.addEventListener(
-              "click",
-              () => {
+            card.addEventListener("click", () => {
 
-                card.classList.add("open");
+              card.classList.add("open");
 
-                card.innerHTML = `
-                  <div class="letter-text">
-                    ${data.text}
-                  </div>
+              card.innerHTML = `
+                <div class="letter-text">${data.text}</div>
 
-                  <audio controls>
-                    <source
-                      src="${data.song}"
-                      type="audio/mpeg"
-                    >
-                    Your browser does not support audio.
-                  </audio>
-                `;
+                <audio controls>
+                  <source src="${data.song}" type="audio/mpeg">
+                  Your browser does not support audio.
+                </audio>
+              `;
 
-              }
-            );
+            });
 
           }
 
         }
-
 
         lettersContainer.appendChild(card);
 
@@ -257,34 +200,7 @@
 
     }
 
-
     createLetters();
-
-
-    /*
-      When the next day unlocks,
-      refresh the cards automatically.
-    */
-
-    setInterval(() => {
-
-      const openLetter =
-        document.querySelector(".letter.open");
-
-      /*
-        Don't refresh while somebody
-        is reading/listening to a letter.
-      */
-
-      if (!openLetter) {
-
-        lettersContainer.innerHTML = "";
-
-        createLetters();
-
-      }
-
-    }, 30000);
 
   </script>
 
