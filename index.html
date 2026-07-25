@@ -78,6 +78,10 @@
       padding: 40px;
     }
 
+    .letter.open:hover {
+      transform: none;
+    }
+
     .letter-text {
       max-width: 850px;
       line-height: 1.8;
@@ -132,7 +136,28 @@
 
   <script>
 
-    const lettersContainer = document.getElementById("letters");
+    /*
+      Day 1:
+      26 July 2026 at 12:00 AM Pakistan time
+
+      Pakistan = UTC+5
+
+      Therefore:
+      26 July 12:00 AM PKT
+      = 25 July 7:00 PM UTC
+    */
+
+    const firstUnlock = Date.UTC(2026, 6, 25, 19, 0, 0);
+
+    const oneDay = 24 * 60 * 60 * 1000;
+
+    const lettersContainer =
+      document.getElementById("letters");
+
+
+    /*
+      LETTERS + SONGS
+    */
 
     const letterData = {
 
@@ -149,50 +174,83 @@
 
     function createLetters() {
 
+      const now = Date.now();
+
+      lettersContainer.innerHTML = "";
+
+
       for (let day = 1; day <= 21; day++) {
 
-        const card = document.createElement("div");
+        const unlockTime =
+          firstUnlock + ((day - 1) * oneDay);
+
+        const unlocked =
+          now >= unlockTime;
+
+        const card =
+          document.createElement("div");
+
 
         /*
-          TEST MODE:
-          Day 1 is unlocked immediately.
-          Days 2-21 remain locked.
+          LOCKED
         */
-
-        const unlocked = day === 1;
 
         if (!unlocked) {
 
           card.className = "letter";
-          card.innerHTML = `🔒 Day ${day}`;
 
-        } else {
+          card.innerHTML =
+            `🔒 Day ${day}`;
 
-          card.className = "letter unlocked";
-          card.innerHTML = `💌 Day ${day}`;
+        }
 
-          const data = letterData[day];
+
+        /*
+          UNLOCKED
+        */
+
+        else {
+
+          card.className =
+            "letter unlocked";
+
+          card.innerHTML =
+            `💌 Day ${day}`;
+
+          const data =
+            letterData[day];
+
 
           if (data) {
 
-            card.addEventListener("click", () => {
+            card.addEventListener(
+              "click",
+              () => {
 
-              card.classList.add("open");
+                card.classList.add("open");
 
-              card.innerHTML = `
-                <div class="letter-text">${data.text}</div>
+                card.innerHTML = `
+                  <div class="letter-text">
+                    ${data.text}
+                  </div>
 
-                <audio controls>
-                  <source src="${data.song}" type="audio/mpeg">
-                  Your browser does not support audio.
-                </audio>
-              `;
+                  <audio controls preload="metadata">
+                    <source
+                      src="${data.song}"
+                      type="audio/mpeg"
+                    >
+                    Your browser does not support audio.
+                  </audio>
+                `;
 
-            });
+              },
+              { once: true }
+            );
 
           }
 
         }
+
 
         lettersContainer.appendChild(card);
 
@@ -200,7 +258,58 @@
 
     }
 
+
     createLetters();
+
+
+    /*
+      Check every 30 seconds.
+
+      If a new day reaches midnight,
+      rebuild the cards automatically.
+
+      If a letter is currently open,
+      don't interrupt it.
+    */
+
+    let lastUnlockedDay =
+      Math.max(
+        0,
+        Math.min(
+          21,
+          Math.floor(
+            (Date.now() - firstUnlock) / oneDay
+          ) + 1
+        )
+      );
+
+
+    setInterval(() => {
+
+      const currentUnlockedDay =
+        Math.max(
+          0,
+          Math.min(
+            21,
+            Math.floor(
+              (Date.now() - firstUnlock) / oneDay
+            ) + 1
+          )
+        );
+
+
+      if (
+        currentUnlockedDay !== lastUnlockedDay &&
+        !document.querySelector(".letter.open")
+      ) {
+
+        lastUnlockedDay = currentUnlockedDay;
+
+        createLetters();
+
+      }
+
+    }, 30000);
 
   </script>
 
