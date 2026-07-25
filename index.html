@@ -1,168 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>21 Letters for 21 Years</title>
 
-<title>21 Letters for 21 Years</title>
-
-<style>
+  <style>
     * {
-        box-sizing: border-box;
+      box-sizing: border-box;
     }
 
     body {
-        margin: 0;
-        min-height: 100vh;
-        background: #fff7f9;
-        font-family: Georgia, serif;
-        color: #3d3034;
-        padding: 60px 20px;
+      margin: 0;
+      min-height: 100vh;
+      background: #fff7f9;
+      color: #684d57;
+      font-family: Georgia, "Times New Roman", serif;
     }
 
     .container {
-        max-width: 850px;
-        margin: auto;
+      width: min(1100px, 92%);
+      margin: 0 auto;
+      padding: 70px 0;
+      text-align: center;
     }
 
     h1 {
-        text-align: center;
-        font-size: 48px;
-        font-weight: normal;
-        margin-bottom: 10px;
+      margin: 0;
+      font-size: clamp(38px, 6vw, 64px);
+      font-weight: 400;
+      letter-spacing: 1px;
     }
 
     .subtitle {
-        text-align: center;
-        font-style: italic;
-        color: #8c747c;
-        margin-bottom: 50px;
-        font-size: 18px;
+      margin: 18px 0 55px;
+      font-size: 20px;
+      font-style: italic;
+      color: #96747f;
     }
 
     .letters {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
     }
 
     .letter {
-        height: 130px;
-        border: none;
-        border-radius: 18px;
-        font-family: Georgia, serif;
-        font-size: 20px;
-        transition: 0.25s;
+      min-height: 135px;
+      border: 1px solid #eadde1;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      color: #765b64;
+      box-shadow: 0 5px 20px rgba(100, 70, 80, 0.04);
+      transition: transform 0.2s ease, background 0.2s ease;
     }
 
-    .unlocked {
-        background: white;
-        color: #3d3034;
-        cursor: pointer;
-        box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+    .letter.unlocked {
+      cursor: pointer;
+      background: #ffffff;
     }
 
-    .unlocked:hover {
-        transform: translateY(-4px);
+    .letter.unlocked:hover {
+      transform: translateY(-3px);
+      background: #fffafb;
     }
 
-    .locked {
-        background: #eadfe2;
-        color: #9c8e93;
-        cursor: not-allowed;
+    .lock {
+      margin-right: 8px;
     }
 
-    @media (max-width: 600px) {
-        h1 {
-            font-size: 38px;
-        }
+    @media (max-width: 750px) {
+      .container {
+        padding-top: 45px;
+      }
 
-        .letters {
-            grid-template-columns: repeat(2, 1fr);
-        }
+      .letters {
+        grid-template-columns: 1fr;
+      }
 
-        .letter {
-            height: 110px;
-        }
+      .letter {
+        min-height: 105px;
+      }
     }
-</style>
+  </style>
 </head>
 
 <body>
 
-<div class="container">
-
+  <main class="container">
     <h1>21 Letters for 21 Years</h1>
-
-    <p class="subtitle">
-        A letter for every year of you.
-    </p>
+    <p class="subtitle">A letter for every year of you.</p>
 
     <div class="letters" id="letters"></div>
+  </main>
 
-</div>
+  <script>
+    /*
+      Day 1 unlocks:
+      26 July 2026 at 12:00 AM Pakistan Standard Time (UTC+5)
 
+      This is 25 July 2026 at 7:00 PM UTC.
+    */
 
-<script>
+    const firstUnlock = Date.UTC(2026, 6, 25, 19, 0, 0);
 
-const NUMBER_OF_LETTERS = 21;
+    const lettersContainer = document.getElementById("letters");
 
-/*
-Day 1 unlocks:
-26 July 2026
-12:00 AM Pakistan Standard Time
+    function createLetters() {
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
 
-Pakistan = UTC + 5
-Therefore midnight in Pakistan = 19:00 UTC on 25 July.
-*/
+      for (let day = 1; day <= 21; day++) {
+        const unlockTime = firstUnlock + ((day - 1) * oneDay);
+        const unlocked = now >= unlockTime;
 
-const FIRST_UNLOCK =
-    new Date("2026-07-25T19:00:00Z").getTime();
+        const card = document.createElement("div");
+        card.className = unlocked ? "letter unlocked" : "letter";
 
-const ONE_DAY = 24 * 60 * 60 * 1000;
+        if (unlocked) {
+          card.innerHTML = `💌 Day ${day}`;
+        } else {
+          card.innerHTML = `<span class="lock">🔒</span> Day ${day}`;
+        }
 
-const container = document.getElementById("letters");
-
-for (let i = 1; i <= NUMBER_OF_LETTERS; i++) {
-
-    const unlockTime =
-        FIRST_UNLOCK + ((i - 1) * ONE_DAY);
-
-    const button = document.createElement("button");
-
-    button.classList.add("letter");
-
-    const now = Date.now();
-
-    if (now >= unlockTime) {
-
-        button.classList.add("unlocked");
-        button.innerHTML = "Day " + i + " ♡";
-
-        button.onclick = function () {
-            window.location.href = "letter" + i + ".html";
-        };
-
-    } else {
-
-        button.classList.add("locked");
-        button.innerHTML = "🔒 Day " + i;
-
-        button.onclick = function () {
-
-            const date =
-                new Date(unlockTime);
-
-            alert(
-                "This letter isn't ready to be opened yet ♡"
-            );
-        };
+        lettersContainer.appendChild(card);
+      }
     }
 
-    container.appendChild(button);
-}
+    createLetters();
 
-</script>
+    /*
+      Refresh automatically when a locked day reaches
+      its unlock time, so the user doesn't need to reload.
+    */
+
+    setInterval(() => {
+      lettersContainer.innerHTML = "";
+      createLetters();
+    }, 30000);
+  </script>
 
 </body>
 </html>
