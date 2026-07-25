@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>21 Letters for 21 Years</title>
 
   <style>
@@ -49,15 +50,15 @@
       min-height: 135px;
       border: 1px solid #eadde1;
       border-radius: 20px;
-      background: rgba(255,255,255,0.65);
+      background: rgba(255, 255, 255, 0.65);
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 25px;
       font-size: 21px;
       color: #765b64;
       box-shadow: 0 5px 20px rgba(100, 70, 80, 0.04);
       transition: transform 0.2s ease, background 0.2s ease;
-      padding: 24px;
     }
 
     .letter.unlocked {
@@ -70,30 +71,24 @@
       background: #fffafb;
     }
 
-    .lock {
-      margin-right: 8px;
-    }
-
     .letter.open {
-      display: block;
-      text-align: left;
+      grid-column: 1 / -1;
+      flex-direction: column;
       cursor: default;
-    }
-
-    .letter.open:hover {
-      transform: none;
+      padding: 40px;
     }
 
     .letter-text {
-      font-size: 18px;
+      max-width: 850px;
       line-height: 1.8;
+      font-size: 19px;
+      text-align: left;
       white-space: pre-wrap;
-      margin-bottom: 25px;
     }
 
     audio {
-      width: 100%;
-      display: block;
+      width: min(500px, 100%);
+      margin-top: 30px;
     }
 
     @media (max-width: 750px) {
@@ -108,6 +103,15 @@
       .letter {
         min-height: 105px;
       }
+
+      .letter.open {
+        grid-column: auto;
+        padding: 25px;
+      }
+
+      .letter-text {
+        font-size: 17px;
+      }
     }
   </style>
 </head>
@@ -115,100 +119,173 @@
 <body>
 
   <main class="container">
+
     <h1>21 Letters for 21 Years</h1>
-    <p class="subtitle">A letter for every year of you.</p>
+
+    <p class="subtitle">
+      A letter for every year of you.
+    </p>
 
     <div class="letters" id="letters"></div>
+
   </main>
 
   <script>
-    /*
-      Day 1 unlocks:
-      26 July 2026 at 12:00 AM Pakistan Standard Time (UTC+5)
 
-      This equals 25 July 2026 at 7:00 PM UTC.
+    /*
+      DAY 1:
+      26 July 2026
+      12:00 AM Pakistan Standard Time (UTC+5)
+
+      This equals:
+      25 July 2026
+      7:00 PM UTC
     */
 
     const firstUnlock = Date.UTC(2026, 6, 25, 19, 0, 0);
-    const oneDay = 24 * 60 * 60 * 1000;
 
-    const lettersContainer = document.getElementById("letters");
+    const lettersContainer =
+      document.getElementById("letters");
+
+
+    /*
+      LETTERS + SONGS
+    */
 
     const letterData = {
+
       1: {
+
         text: `Happy birthday baby, i know you said i cant spend money on gifts so obviously i had to come up with other ways to show how much this day, and you, mean to me, so in this portal im gonna write 21 letters to you, 1 for every year since you were born cause i need to make up for all the birthday i have missed. And with every letter I'm gonna put a song that reminds me of us. And because today is your birthday I want to make sure everything feels special cause it really is that important huh. I know I'm not perfect but I genuinely wanna be when it comes to you cause you’re perfect to me and even if you think you’re not, I don't care because you're my home. I promise I'll always stay by your side and be right here whenever you need me. I’ll always put you before everyone else and do anything just to put a smile on your face cause that’s my favourite thing in the whole world. This last year we have gotten even closer in so many ways and it was the best year ever and I know inshallah the coming year is also gonna bring so many great things into your life, and I definitely need to find more ways to annoy you😋and more things to put on our bucket list.`,
+
         song: "har-baar.mp3"
+
       }
+
     };
 
-    function getUnlockedDayCount() {
-      const now = Date.now();
-
-      if (now < firstUnlock) {
-        return 0;
-      }
-
-      return Math.min(
-        21,
-        Math.floor((now - firstUnlock) / oneDay) + 1
-      );
-    }
 
     function createLetters() {
+
       const now = Date.now();
 
-      lettersContainer.innerHTML = "";
+      const oneDay =
+        24 * 60 * 60 * 1000;
+
 
       for (let day = 1; day <= 21; day++) {
-        const unlockTime = firstUnlock + ((day - 1) * oneDay);
-        const unlocked = now >= unlockTime;
-        const data = letterData[day];
 
-        const card = document.createElement("div");
-        card.className = unlocked ? "letter unlocked" : "letter";
+        const unlockTime =
+          firstUnlock + ((day - 1) * oneDay);
+
+        const unlocked =
+          now >= unlockTime;
+
+        const card =
+          document.createElement("div");
+
+
+        /*
+          LOCKED DAY
+        */
 
         if (!unlocked) {
-          card.innerHTML = `<span class="lock">🔒</span> Day ${day}`;
-        } else if (data) {
-          card.innerHTML = `💌 Day ${day}`;
 
-          card.addEventListener("click", () => {
-            card.classList.add("open");
+          card.className = "letter";
 
-            card.innerHTML = `
-              <div class="letter-text">${data.text}</div>
-              <audio controls preload="metadata">
-                <source src="${data.song}" type="audio/mpeg">
-                Your browser does not support the audio player.
-              </audio>
-            `;
-          }, { once: true });
-        } else {
-          card.innerHTML = `💌 Day ${day}`;
+          card.innerHTML =
+            `🔒 Day ${day}`;
+
         }
 
+
+        /*
+          UNLOCKED DAY
+        */
+
+        else {
+
+          card.className =
+            "letter unlocked";
+
+          card.innerHTML =
+            `💌 Day ${day}`;
+
+          const data =
+            letterData[day];
+
+
+          /*
+            Only make the card open
+            if a letter has been added
+            for that day.
+          */
+
+          if (data) {
+
+            card.addEventListener(
+              "click",
+              () => {
+
+                card.classList.add("open");
+
+                card.innerHTML = `
+                  <div class="letter-text">
+                    ${data.text}
+                  </div>
+
+                  <audio controls>
+                    <source
+                      src="${data.song}"
+                      type="audio/mpeg"
+                    >
+                    Your browser does not support audio.
+                  </audio>
+                `;
+
+              }
+            );
+
+          }
+
+        }
+
+
         lettersContainer.appendChild(card);
+
       }
+
     }
 
-    let unlockedDayCount = getUnlockedDayCount();
 
     createLetters();
 
+
     /*
-      Check periodically for a newly unlocked day.
-      The page only refreshes the cards when the unlock
-      status changes, so an open letter will not suddenly close.
+      When the next day unlocks,
+      refresh the cards automatically.
     */
 
     setInterval(() => {
-      const newUnlockedDayCount = getUnlockedDayCount();
 
-      if (newUnlockedDayCount !== unlockedDayCount) {
-        unlockedDayCount = newUnlockedDayCount;
+      const openLetter =
+        document.querySelector(".letter.open");
+
+      /*
+        Don't refresh while somebody
+        is reading/listening to a letter.
+      */
+
+      if (!openLetter) {
+
+        lettersContainer.innerHTML = "";
+
         createLetters();
+
       }
+
     }, 30000);
+
   </script>
 
 </body>
