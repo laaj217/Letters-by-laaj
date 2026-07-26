@@ -137,14 +137,14 @@
   <script>
 
     /*
-      Day 1:
-      26 July 2026 at 12:00 AM Pakistan time
+      Day 1 unlocks:
+      26 July 2026 at 12:00 AM Pakistan time.
 
-      Pakistan = UTC+5
+      Every following day unlocks at
+      12:00 AM Pakistan time.
 
-      Therefore:
-      26 July 12:00 AM PKT
-      = 25 July 7:00 PM UTC
+      Once a day unlocks, it stays
+      unlocked permanently.
     */
 
     const firstUnlock = Date.UTC(2026, 6, 25, 19, 0, 0);
@@ -166,6 +166,16 @@
         text: `Happy birthday baby, i know you said i cant spend money on gifts so obviously i had to come up with other ways to show how much this day, and you, mean to me, so in this portal im gonna write 21 letters to you, 1 for every year since you were born cause i need to make up for all the birthday i have missed. And with every letter I'm gonna put a song that reminds me of us. And because today is your birthday I want to make sure everything feels special cause it really is that important huh. I know I'm not perfect but I genuinely wanna be when it comes to you cause you’re perfect to me and even if you think you’re not, I don't care because you're my home. I promise I'll always stay by your side and be right here whenever you need me. I’ll always put you before everyone else and do anything just to put a smile on your face cause that’s my favourite thing in the whole world. This last year we have gotten even closer in so many ways and it was the best year ever and I know inshallah the coming year is also gonna bring so many great things into your life, and I definitely need to find more ways to annoy you😋and more things to put on our bucket list.`,
 
         song: "har-baar.mp3"
+
+      },
+
+      2: {
+
+        text: `Hey, if youre reading this right now then it means its day 2 of your birthday and there is a 99.999 percent chance that we spent day 1 together and if we did then there is a 10000 percent chance that it was the cutest day ever cause how can it not be when youre there with me and i can already imagine myself missing your presence and your smile after i get back home. Its actually so unfair how quickly i start missing you when ive literally just seen you. Like somehow spending an entire day with you only makes me want another one. I hope yesterday made you feel even a fraction of how loved and special you are to me, because seeing you happy is genuinely one of my favourite things ever.
+
+And the best part is that your birthday still isnt over, so unfortunately for you, neither is me being unbearably obsessed with making you feel special. Happy day 2, pretty boy. I hope you know id choose a day with you over almost anything, every single time. I love you to the moon and back`,
+
+        song: "rakhlo-tum-chupaake.mp3"
 
       }
 
@@ -192,7 +202,7 @@
 
 
         /*
-          LOCKED
+          LOCKED DAY
         */
 
         if (!unlocked) {
@@ -206,7 +216,7 @@
 
 
         /*
-          UNLOCKED
+          UNLOCKED DAY
         */
 
         else {
@@ -263,13 +273,11 @@
 
 
     /*
-      Check every 30 seconds.
+      Check every 30 seconds for
+      the next midnight unlock.
 
-      If a new day reaches midnight,
-      rebuild the cards automatically.
-
-      If a letter is currently open,
-      don't interrupt it.
+      Previously unlocked letters
+      always remain unlocked.
     */
 
     let lastUnlockedDay =
